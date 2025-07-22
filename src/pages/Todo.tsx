@@ -31,7 +31,7 @@ export const Todo = () => {
                         sx={{
                             display: "flex",
                             flexDirection: "row",
-                            backgroundColor: "#44cf0dff",
+                            backgroundColor: "lightGray.main",
                             padding: 2,
                             borderRadius: 1,
                             justifyContent: "flex-start",
