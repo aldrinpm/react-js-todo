@@ -87,14 +87,7 @@ const ThemeProvider = ({ children }) => {
             }
           `,
         },
-        // Add variant mapping for Typography so that "font147" is recognized.
-        MuiTypography: {
-          defaultProps: {
-            variantMapping: {
-              font147: 'p', // map the custom variant to a HTML tag of your choice
-            },
-          },
-        },
+        MuiTypography,
         MuiButton,
         MuiTab,
         MuiPaper,

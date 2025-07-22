@@ -14,9 +14,14 @@ export const Todo = () => {
     return (
         <Box>
             <h1>Todo</h1>
-            <Box sx={{ width: "500px", display: "flex", flexDirection: "row", gap: 2, marginBottom: 2, alignContent: "center" , alignItems: "center" }}>
-                <Input placeholder="Add a new task" fullWidth sx={{ marginBottom: 2 }} />
-                <Button variant="contained" color="primary" sx={{ height: 25, width: 90, borderRadius: 1 }}>Add </Button>
+            <Box sx={{ width: "500px", display: "flex", flexDirection: "row", gap: 2, marginBottom: 2, alignContent: "center", alignItems: "center" }}>
+                <Input
+                    placeholder="Add a new task"
+                    fullWidth
+                    sx={{ marginBottom: 2 }}
+                    inputProps={{ style: { fontSize: "1.25rem" } }}
+                />
+                <Button variant="contained" color="primary" sx={{ height: 25, width: 90, borderRadius: 1 }}>Add</Button>
             </Box>
 
             <Box>
