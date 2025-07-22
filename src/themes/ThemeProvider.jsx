@@ -34,51 +34,67 @@ const ThemeProvider = ({ children }) => {
         red: { main: colors.red, contrastText: '#FFFFFF' },
       },
       typography: {
-        fontFamily: ['MPLUSRounded1c', 'Roboto', 'Arial', 'Tahoma', 'Helvetica', 'Verdana', 'Times New Roman', '"Segoe UI"', 'sans-serif'].join(','),
+        fontFamily: [
+          'MPLUSRounded1c',
+          'Roboto',
+          'Arial',
+          'Tahoma',
+          'Helvetica',
+          'Verdana',
+          'Times New Roman',
+          '"Segoe UI"',
+          'sans-serif',
+        ].join(','),
         h1: { fontWeight: 700 },
         h2: { fontWeight: 700 },
         h3: { fontWeight: 700 },
         h4: { fontWeight: 700 },
         h5: { fontWeight: 700 },
         h6: { fontWeight: 700 },
-        subtitle1: { fontSize: 16,fontWeight: 700 },
-        subtitle2: { fontSize: 14,fontWeight: 700 },
-        font147: { fontSize: 14, fontWeight: 700  },
-        font145: { fontSize: 14, fontWeight: 500  },
-        font143: { fontSize: 14, fontWeight: 400  },
-        font127: { fontSize: 12, fontWeight: 700  },
-        font125: { fontSize: 12,fontWeight: 500 },
-        font124: { fontSize: 12,fontWeight: 400 },
-        font107: { fontSize: 10, fontWeight: 700  },
-        font105: { fontSize: 10, fontWeight: 500  },
-
+        subtitle1: { fontSize: 16, fontWeight: 700 },
+        subtitle2: { fontSize: 14, fontWeight: 700 },
+        font147: { fontSize: 14, fontWeight: 700 },
+        font145: { fontSize: 14, fontWeight: 500 },
+        font143: { fontSize: 14, fontWeight: 400 },
+        font127: { fontSize: 12, fontWeight: 700 },
+        font125: { fontSize: 12, fontWeight: 500 },
+        font124: { fontSize: 12, fontWeight: 400 },
+        font107: { fontSize: 10, fontWeight: 700 },
+        font105: { fontSize: 10, fontWeight: 500 },
       },
       components: {
         MuiCssBaseline: {
           styleOverrides: `
-                    @font-face {
-                        font-family: 'MPLUSRounded1c';
-                        font-weight: 400;
-                        src: local('MPLUSRounded1c-Regular'), url(${MPLUSRounded1cRegular}) format('truetype');
-                    }
-                    @font-face {
-                      font-family: 'MPLUSRounded1c';
-                      font-weight: 500;
-                      src: local('MPLUSRounded1c-Medium'), url(${MPLUSRounded1cMedium}) format('truetype');
-                    }
-                    @font-face {
-                        font-family: 'MPLUSRounded1c';
-                        font-weight: 700;
-                        src: local('MPLUSRounded1c-Bold'), url('${MPLUSRounded1cBold}') format('truetype');
-                    }
-                    @font-face {
-                      font-family: 'MPLUSRounded1c';
-                      font-weight: 900;
-                      src: local('MPLUSRounded1c-ExtraBold'), url('${MPLUSRounded1cExtraBold}') format('truetype');
-                  }
-                `,
+            @font-face {
+              font-family: 'MPLUSRounded1c';
+              font-weight: 400;
+              src: local('MPLUSRounded1c-Regular'), url(${MPLUSRounded1cRegular}) format('truetype');
+            }
+            @font-face {
+              font-family: 'MPLUSRounded1c';
+              font-weight: 500;
+              src: local('MPLUSRounded1c-Medium'), url(${MPLUSRounded1cMedium}) format('truetype');
+            }
+            @font-face {
+              font-family: 'MPLUSRounded1c';
+              font-weight: 700;
+              src: local('MPLUSRounded1c-Bold'), url('${MPLUSRounded1cBold}') format('truetype');
+            }
+            @font-face {
+              font-family: 'MPLUSRounded1c';
+              font-weight: 900;
+              src: local('MPLUSRounded1c-ExtraBold'), url('${MPLUSRounded1cExtraBold}') format('truetype');
+            }
+          `,
         },
-        MuiTypography,
+        // Add variant mapping for Typography so that "font147" is recognized.
+        MuiTypography: {
+          defaultProps: {
+            variantMapping: {
+              font147: 'p', // map the custom variant to a HTML tag of your choice
+            },
+          },
+        },
         MuiButton,
         MuiTab,
         MuiPaper,

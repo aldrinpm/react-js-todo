@@ -11,9 +11,15 @@ export const Navbar = () => {
                     <Link to={"/profile"}><Typography variant="h6">Profile</Typography></Link>
                 </Box>
                 <Box data-name="login" sx={{ display: "flex", justifyContent: "space-around", alignItems: "center", padding: 1, gap: 2 }}>
-                    <Button variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Login</Typography></Button>
-                    <Typography>Welcome User</Typography>
-                    <Button variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Logout</Typography></Button>
+                    {false ? (
+                        <Button variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Login</Typography></Button>
+                    ) : (
+                        <>
+                            <Typography>{`Welcome <<User>>`}</Typography>
+                            <Button variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Logout</Typography></Button>
+                        </>
+                    )}
+
                 </Box>
             </Box>
         </Box>
