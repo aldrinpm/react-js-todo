@@ -1,10 +1,10 @@
-import { Box, Button, Checkbox, Input, Typography, Tooltip } from "@mui/material";
+import { Box, Button, Checkbox, Input, Typography, Tooltip, Snackbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { auth, firestoreDb } from "../config/firebase";
-import { getDocs, addDoc, collection } from "firebase/firestore"
+import { getDocs, addDoc, collection, deleteDoc, doc } from "firebase/firestore"
 
 interface TodoFormData {
     task: string;
@@ -33,10 +33,6 @@ export const Todo = () => {
         setTaskArr(todos as any[]);
         console.log("Todos fetched:", todos);
     };
-    
-    useEffect(() => {
-        getTodoList();
-    }, []);
 
     const onAdd = async (data: TodoFormData) => {
         const newTask = {
@@ -49,6 +45,29 @@ export const Todo = () => {
         await addDoc(todosCollection, newTask);
         console.log("Submitted data:", newTask);
     };
+
+    const onDelete = async (id: string) => {
+        // Delete the task from taskArr based on its id
+        setTaskArr((prevTasks) => prevTasks.filter((t) => t.id !== id));
+        // Delete the task from Firestore
+        await deleteDoc(doc(todosCollection, id)).then(() => {
+            // add mui snackbar and show success message and must be on top right corner
+            <Snackbar
+                open={true}
+                autoHideDuration={6000}
+                onClose={() => {}}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                message={`Task deleted: ${id}`}
+            />
+            console.log("Task deleted:", id);
+        }).catch((error) => {
+            console.error("Error deleting task:", error);
+        });
+    };
+
+    useEffect(() => {
+        getTodoList();
+    }, []);
 
     return (
         <Box>
@@ -70,9 +89,9 @@ export const Todo = () => {
             </form>
 
             <Box>
-                {taskArr.map((todo, key) => (
+                {taskArr.map((todo) => (
                     <Box
-                        key={key}
+                        key={todo.id}
                         sx={{
                             display: "flex",
                             flexDirection: "row",
@@ -90,7 +109,7 @@ export const Todo = () => {
                             onChange={() => {
                                 setTaskArr((prevTasks) =>
                                     prevTasks.map((t) =>
-                                        t.task === todo.task ? { ...t, completed: !t.completed } : t
+                                        t.id === todo.id ? { ...t, completed: !t.completed } : t
                                     )
                                 );
                             }}
@@ -98,6 +117,7 @@ export const Todo = () => {
                         <Typography variant="h6" sx={{ mr: 2 }}>{todo.task}</Typography>
                         <Tooltip title="Delete" placement="top" arrow>
                             <Button
+                                onClick={() => onDelete(todo.id)}
                                 variant="contained"
                                 color="primary"
                                 sx={{
