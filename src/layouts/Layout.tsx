@@ -1,7 +1,8 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Layout = () => {
   return (
@@ -25,7 +26,7 @@ const Layout = () => {
           padding: "20px",
         }}
       >
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <Outlet />
         </Suspense>
       </main>
