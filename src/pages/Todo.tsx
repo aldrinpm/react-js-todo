@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { auth, firestoreDb } from "../config/firebase";
-import { getDocs, addDoc, collection, deleteDoc, doc } from "firebase/firestore"
+import { getDocs, addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
 
 interface TodoFormData {
     task: string;
@@ -61,9 +61,22 @@ export const Todo = () => {
         });
     };
 
+    const onUpdate = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        // Update the task in taskArr based on its id
+        setTaskArr((prevTasks) =>
+            prevTasks.map((t) =>
+                t.id === id ? { ...t, completed: !t.completed } : t
+            )
+        );
+        // Update the task in Firestore
+        await updateDoc(doc(todosCollection, id), {
+            completed: e.target.checked
+        });
+    };
+
     useEffect(() => {
         getTodoList();
-    }, []);
+    }, [auth.currentUser]);
 
     return (
         <Box>
@@ -102,13 +115,7 @@ export const Todo = () => {
                     >
                         <Checkbox
                             checked={todo.completed}
-                            onChange={() => {
-                                setTaskArr((prevTasks) =>
-                                    prevTasks.map((t) =>
-                                        t.id === todo.id ? { ...t, completed: !t.completed } : t
-                                    )
-                                );
-                            }}
+                            onChange={(e) => onUpdate(todo.id, e)}
                         />
                         <Typography variant="h6" sx={{ mr: 2 }}>{todo.task}</Typography>
                         <Tooltip title="Delete" placement="top" arrow>
