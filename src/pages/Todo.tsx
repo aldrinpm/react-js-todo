@@ -1,33 +1,78 @@
 import { Box, Button, Checkbox, Input, Typography, Tooltip } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form"
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { auth, firestoreDb } from "../config/firebase";
+import { getDocs, addDoc, collection } from "firebase/firestore"
+
+interface TodoFormData {
+    task: string;
+    userId: string;
+    completed: boolean;
+}
 
 export const Todo = () => {
-    const initialTasks = [
-        { id: 1, userId: 1, completed: true, task: "Wash the car" },
-        { id: 2, userId: 1, completed: false, task: "Clean the house" },
-        { id: 3, userId: 1, completed: false, task: "Do the laundry" },
-        { id: 4, userId: 1, completed: true, task: "Buy groceries asdfas dfasdf asd fasd fas dfasd f" },
-    ];
+    const schema = yup.object().shape({
+        task: yup.string().required("Task is required").max(50, "Task must be at most 50 characters long"),
+        userId: yup.string().optional().default(auth.currentUser?.uid || "unknown"),
+        completed: yup.boolean().optional().default(false),
+    });
 
-    const [taskArr, setTaskArr] = useState(initialTasks);
+    const [taskArr, setTaskArr] = useState([] as any[]);
+
+    const { control, register, handleSubmit, formState: { errors } } = useForm<TodoFormData>({
+        resolver: yupResolver(schema),
+    });
+
+    const todosCollection = collection(firestoreDb, "todos");
+
+    const getTodoList = async () => {
+        const querySnapshot = await getDocs(todosCollection);
+        const todos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTaskArr(todos as any[]);
+        console.log("Todos fetched:", todos);
+    };
+    
+    useEffect(() => {
+        getTodoList();
+    }, []);
+
+    const onAdd = async (data: TodoFormData) => {
+        const newTask = {
+            task: data.task,
+            userId: auth.currentUser?.uid || "unknown",
+            completed: false,
+        };
+        setTaskArr([...taskArr, newTask]);
+
+        await addDoc(todosCollection, newTask);
+        console.log("Submitted data:", newTask);
+    };
 
     return (
         <Box>
-            <h1>Todo</h1>
-            <Box sx={{ width: "500px", display: "flex", flexDirection: "row", gap: 2, marginBottom: 2, alignContent: "center", alignItems: "center" }}>
-                <Input
-                    placeholder="Add a new task"
-                    fullWidth
-                    sx={{ marginBottom: 2 }}
-                    inputProps={{ style: { fontSize: "1.25rem" } }}
-                />
-                <Button variant="contained" color="primary" sx={{ height: 25, width: 90, borderRadius: 1 }}>Add</Button>
-            </Box>
+            <Typography variant="h4">Todo</Typography>
+            <form onSubmit={handleSubmit(onAdd)}>
+                <Box sx={{ width: "500px", display: "flex", flexDirection: "row", gap: 2, alignContent: "center", alignItems: "center" }}>
+                    <Input
+                        {...register("task")}
+                        placeholder="Add a new task"
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                        inputProps={{ style: { fontSize: "1.25rem" } }}
+                    />
+                    <Button type="submit" variant="contained" color="primary" sx={{ height: 25, width: 90, borderRadius: 1 }}>Add</Button>
+                </Box>
+                {errors.task && (
+                    <Typography variant="h6" color="error" sx={{ mt: -2, mb: 2 }}>{errors.task.message}</Typography>
+                )}
+            </form>
 
             <Box>
-                {taskArr.map((todo) => (
+                {taskArr.map((todo, key) => (
                     <Box
-                        key={todo.id}
+                        key={key}
                         sx={{
                             display: "flex",
                             flexDirection: "row",
@@ -45,14 +90,12 @@ export const Todo = () => {
                             onChange={() => {
                                 setTaskArr((prevTasks) =>
                                     prevTasks.map((t) =>
-                                        t.id === todo.id ? { ...t, completed: !t.completed } : t
+                                        t.task === todo.task ? { ...t, completed: !t.completed } : t
                                     )
                                 );
                             }}
                         />
-                        <Typography variant="h6" sx={{ mr: 2 }}>
-                            {todo.task}
-                        </Typography>
+                        <Typography variant="h6" sx={{ mr: 2 }}>{todo.task}</Typography>
                         <Tooltip title="Delete" placement="top" arrow>
                             <Button
                                 variant="contained"
@@ -72,6 +115,8 @@ export const Todo = () => {
                 ))}
             </Box>
 
-        </Box>
+        </Box >
     );
 }
+
+export default Todo;

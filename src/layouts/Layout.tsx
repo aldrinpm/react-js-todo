@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
@@ -15,18 +15,20 @@ const Layout = () => {
       }}
     >
       <Header />
-    <main
-      style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-        width: "100%",
-        padding: "20px",
-      }}
-    >
-      <Outlet />
-    </main>
+      <main
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          width: "100%",
+          padding: "20px",
+        }}
+      >
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
+      </main>
       <Footer />
     </div>
   );
