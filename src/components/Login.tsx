@@ -3,6 +3,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../config/firebase";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth"; 
 
 interface UserDetails {
     uid: string;
@@ -14,6 +15,7 @@ interface UserDetails {
 export const Login = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState<UserDetails | null>(null);
+    const [userInfo] = useAuthState(auth);
 
     const handleLogin = async () => {
         try {
@@ -35,12 +37,16 @@ export const Login = () => {
         }
     };
 
+    useEffect(() =>{
+
+    }, [])
+
     return (
         <Box data-name="login" sx={{ display: "flex", justifyContent: "space-around", alignItems: "center", padding: 1, gap: 2 }}>
-            {user ? (
+            {userInfo ? (
                 <>
-                    <img src={user.photoURL || ""} alt="user" style={{ borderRadius: "50%", width: "40px", height: "40px" }} />
-                    <Typography>{`Welcome ${user.displayName || ""}`}</Typography>
+                    <img src={user?.photoURL || ""} alt="user" style={{ borderRadius: "50%", width: "40px", height: "40px" }} />
+                    <Typography>{`Welcome ${user?.displayName || ""}`}</Typography>
                     <Button onClick={handleLogout} variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Logout</Typography></Button>
                 </>
             ) : (

@@ -3,9 +3,17 @@ import { Link } from "react-router-dom";
 import { Login } from "./Login";
 import { useAuthState } from "react-firebase-hooks/auth"; 
 import { auth } from "../config/firebase";
+import { useEffect } from "react";
 
 export const Navbar = () => {
     const [user] = useAuthState(auth);
+
+     useEffect(()=>{
+        if (user) {
+            console.log(user)
+        }
+
+     }, [user])
 
     return (
         <Box component="nav" sx={{ display: "flex", flexDirection: "row", padding: 2, backgroundColor: "#f0f0f0", boxShadow: 1, width: "100%" }}>
