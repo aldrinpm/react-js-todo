@@ -20,6 +20,8 @@ export const Todo = () => {
     });
 
     const [taskArr, setTaskArr] = useState([] as any[]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const { control, register, handleSubmit, formState: { errors } } = useForm<TodoFormData>({
         resolver: yupResolver(schema),
@@ -51,14 +53,8 @@ export const Todo = () => {
         setTaskArr((prevTasks) => prevTasks.filter((t) => t.id !== id));
         // Delete the task from Firestore
         await deleteDoc(doc(todosCollection, id)).then(() => {
-            // add mui snackbar and show success message and must be on top right corner
-            <Snackbar
-                open={true}
-                autoHideDuration={6000}
-                onClose={() => {}}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                message={`Task deleted: ${id}`}
-            />
+            setSnackbarMessage(`Task deleted: ${id}`);
+            setSnackbarOpen(true);
             console.log("Task deleted:", id);
         }).catch((error) => {
             console.error("Error deleting task:", error);
@@ -135,6 +131,13 @@ export const Todo = () => {
                 ))}
             </Box>
 
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                message={snackbarMessage}
+            />
         </Box >
     );
 }
