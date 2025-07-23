@@ -21,7 +21,6 @@ export const Login = () => {
         try {
             const result = await signInWithPopup(auth, provider);
             setUser(result.user as UserDetails);
-            console.log("User logged in:", result.user);
         } catch (error) {
             console.error("Login error:", error);
         }
