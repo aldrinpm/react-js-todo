@@ -42,10 +42,10 @@ export const Todo = () => {
             userId: auth.currentUser?.uid || "unknown",
             completed: false,
         };
-        setTaskArr([...taskArr, newTask]);
-
         await addDoc(todosCollection, newTask);
-        console.log("Submitted data:", newTask);
+
+        // refetch the todo list
+        getTodoList();
     };
 
     const onDelete = async (id: string) => {
