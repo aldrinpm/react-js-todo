@@ -1,9 +1,10 @@
 import { Box, Button, Checkbox, Input, Typography, Tooltip, Snackbar } from "@mui/material";
+import TodoList from "./TodoList";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { auth, firestoreDb } from "../config/firebase";
+import { auth, firestoreDb } from "../../config/firebase";
 import { getDocs, addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
 
 interface TodoFormData {
@@ -33,7 +34,6 @@ export const Todo = () => {
         const querySnapshot = await getDocs(todosCollection);
         const todos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setTaskArr(todos as any[]);
-        console.log("Todos fetched:", todos);
     };
 
     const onAdd = async (data: TodoFormData) => {
@@ -58,7 +58,6 @@ export const Todo = () => {
         await deleteDoc(doc(todosCollection, id)).then(() => {
             setSnackbarMessage(`Task deleted: ${id}`);
             setSnackbarOpen(true);
-            console.log("Task deleted:", id);
         }).catch((error) => {
             console.error("Error deleting task:", error);
         });
@@ -79,7 +78,7 @@ export const Todo = () => {
 
     useEffect(() => {
         getTodoList();
-    }, [auth.currentUser]);
+    });
 
     return (
         <Box>
@@ -101,44 +100,7 @@ export const Todo = () => {
             </form>
 
             <Box>
-                {taskArr.map((todo) => (
-                    <Box
-                        key={todo.id}
-                        sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            backgroundColor: "lightGray.main",
-                            padding: 2,
-                            borderRadius: 1,
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                            height: "40px",
-                            mb: 1,
-                        }}
-                    >
-                        <Checkbox
-                            checked={todo.completed}
-                            onChange={(e) => onUpdate(todo.id, e)}
-                        />
-                        <Typography variant="h6" sx={{ mr: 2 }}>{todo.task}</Typography>
-                        <Tooltip title="Delete" placement="top" arrow>
-                            <Button
-                                onClick={() => onDelete(todo.id)}
-                                variant="contained"
-                                color="primary"
-                                sx={{
-                                    ml: "auto",
-                                    width: "20px",
-                                    minWidth: "20px",
-                                    height: 20,
-                                    borderRadius: 1,
-                                }}
-                            >
-                                &#128465;
-                            </Button>
-                        </Tooltip>
-                    </Box>
-                ))}
+                <TodoList todos={taskArr} onUpdate={onUpdate} onDelete={onDelete} />
             </Box>
 
             <Snackbar

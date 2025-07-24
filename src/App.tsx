@@ -7,7 +7,7 @@ import React from 'react';
 
 // Lazy-loaded pages
 const Home = lazyDelay(() => import('./pages/Home'), 2000); 
-const Todo = React.lazy(() => import('./pages/Todo'));
+const Todo = React.lazy(() => import('./pages/Todo/Todo'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
