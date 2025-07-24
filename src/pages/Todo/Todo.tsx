@@ -6,6 +6,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { auth, firestoreDb } from "../../config/firebase";
 import { getDocs, addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Forbidden } from "../Forbidden";
 
 interface TodoFormData {
     task: string;
@@ -14,9 +16,10 @@ interface TodoFormData {
 }
 
 export const Todo = () => {
+    const [user] = useAuthState(auth);
     const schema = yup.object().shape({
         task: yup.string().required("Task is required").max(50, "Task must be at most 50 characters long"),
-        userId: yup.string().optional().default(auth.currentUser?.uid || "unknown"),
+        userId: yup.string().optional().default(user?.uid || "unknown"),
         completed: yup.boolean().optional().default(false),
     });
 
@@ -39,7 +42,7 @@ export const Todo = () => {
     const onAdd = async (data: TodoFormData) => {
         const newTask = {
             task: data.task,
-            userId: auth.currentUser?.uid || "unknown",
+            userId: user?.uid || "unknown",
             completed: false,
         };
         await addDoc(todosCollection, newTask);
@@ -78,7 +81,11 @@ export const Todo = () => {
 
     useEffect(() => {
         getTodoList();
-    });
+    }, []);
+
+    if (!user) {
+        return <Forbidden />;
+    }
 
     return (
         <Box>

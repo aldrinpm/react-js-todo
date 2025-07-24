@@ -1,26 +1,16 @@
 import { Box, Button, Typography } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../config/firebase";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth"; 
 
-interface UserDetails {
-    uid: string;
-    displayName: string | null;
-    email: string | null;
-    photoURL: string | null;
-}
-
 export const Login = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState<UserDetails | null>(null);
-    const [userInfo] = useAuthState(auth);
+    const [user] = useAuthState(auth);
 
     const handleLogin = async () => {
         try {
-            const result = await signInWithPopup(auth, provider);
-            setUser(result.user as UserDetails);
+            await signInWithPopup(auth, provider);
         } catch (error) {
             console.error("Login error:", error);
         }
@@ -29,22 +19,17 @@ export const Login = () => {
     const handleLogout = async () => {
         try {
             await auth.signOut();
-            setUser(null);
             navigate("/");
         } catch (error) {
             console.error(error);
         }
     };
 
-    useEffect(() =>{
-
-    }, [])
-
     return (
         <Box data-name="login" sx={{ display: "flex", justifyContent: "space-around", alignItems: "center", padding: 1, gap: 2 }}>
-            {userInfo ? (
+            {user ? (
                 <>
-                    <img src={user?.photoURL || ""} alt="user" style={{ borderRadius: "50%", width: "40px", height: "40px" }} />
+                    <img src={user?.photoURL || undefined} alt="user" style={{ borderRadius: "50%", width: "40px", height: "40px" }} />
                     <Typography>{`Welcome ${user?.displayName || ""}`}</Typography>
                     <Button onClick={handleLogout} variant="contained" sx={{ height: 40, borderRadius: 2 }}><Typography>Logout</Typography></Button>
                 </>
