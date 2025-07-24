@@ -23,7 +23,7 @@ export const Todo = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
-    const { control, register, handleSubmit, formState: { errors } } = useForm<TodoFormData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<TodoFormData>({
         resolver: yupResolver(schema),
     });
 
@@ -43,6 +43,9 @@ export const Todo = () => {
             completed: false,
         };
         await addDoc(todosCollection, newTask);
+
+        // clear the form
+        reset();
 
         // refetch the todo list
         getTodoList();

@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ThemeProvider from './themes/ThemeProvider';
 import Layout from './layouts/Layout';
 import { lazyWithDelay as lazyDelay } from './utils/lazyWithDelay';
+import React from 'react';
 
 // Lazy-loaded pages
 const Home = lazyDelay(() => import('./pages/Home'), 2000); 
-const Todo = lazyDelay(() => import('./pages/Todo'), 0);
-const Profile = lazyDelay(() => import('./pages/Profile'), 0);
-const NotFound = lazyDelay(() => import('./pages/NotFound'), 0);
+const Todo = React.lazy(() => import('./pages/Todo'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 function App() {
   return (
