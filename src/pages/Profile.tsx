@@ -4,8 +4,7 @@ import { Forbidden } from "./Forbidden";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
-import { Box, Button, Input, Typography } from "@mui/material";
-import { indexedDb } from '../config/indexedDb'
+import { Box, Button, Input, Snackbar, Typography } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { MyDB } from "../config/indexedDb";
@@ -20,6 +19,8 @@ interface ProfileFormData {
 export const Profile = () => {
     const [user] = useAuthState(auth);
     const [profileData, setProfileData] = useState({} as ProfileFormData);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     
     const schema = yup.object().shape({
         id: yup.string().optional().default(user?.uid || "unknown"),
@@ -39,8 +40,12 @@ export const Profile = () => {
         db.profile.toArray().then(profiles => {
             if (profiles.length > 0) {
                 db.profile.update(profiles[0].id, data);
+                setSnackbarMessage(`Profile updated: ${profiles[0].id}`);
+                setSnackbarOpen(true);  
             } else {
                 db.profile.add(data);
+                setSnackbarMessage(`Profile added: ${data.id}`);
+                setSnackbarOpen(true);
             }
         });
     };
@@ -86,7 +91,7 @@ export const Profile = () => {
     }
 
     return (
-        <div>
+        <Box>
             <h1>Profile</h1>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -135,7 +140,15 @@ export const Profile = () => {
                     </Button>
                 </Box>
             </form>
-        </div>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={2000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                message={snackbarMessage}
+            />
+        </Box>
     );
 };
 
