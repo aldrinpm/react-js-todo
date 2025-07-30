@@ -29,33 +29,12 @@ export const Profile = () => {
         address: yup.string().required("Address is required").max(20, "Address must be at most 20 characters long"),
     });
     
-    const { register, handleSubmit, formState: { errors }, reset, setValue  } = useForm<ProfileFormData>({
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<ProfileFormData>({
         resolver: yupResolver(schema),
     });
 
     const profileCollection = collection(firestoreDb, "profile");
-    
-    const indexedDBupdate = (data: ProfileFormData) => {
-        const db = new MyDB();
-        db.profile.toArray().then(profiles => {
-            if (profiles.length > 0) {
-                db.profile.update(profiles[0].id, data);
-                setSnackbarMessage(`Profile updated: ${profiles[0].id}`);
-                setSnackbarOpen(true);  
-            } else {
-                db.profile.add(data);
-                setSnackbarMessage(`Profile added: ${data.id}`);
-                setSnackbarOpen(true);
-            }
-        });
-    };
 
-    const onSubmit = (data: ProfileFormData) => {
-        // query using dexie from profileDB where id is not null
-        indexedDBupdate(data);
-    };
-
-    // get profile from Cloud Firestore from the collection named profile
     const getProfile = async () => {
         const querySnapshot = await getDocs(profileCollection);
         const profiles = {
@@ -67,6 +46,25 @@ export const Profile = () => {
 
         setProfileData(profiles);
     };
+    
+    const updateIndexedDb = async (data: ProfileFormData) => {
+        const db = new MyDB();
+        db.profile.toArray().then(async (profiles) => {
+            if (profiles.length > 0) {
+                await db.profile.update(profiles[0].id, data);
+                setSnackbarMessage(`Profile updated: ${profiles[0].id}`);
+                setSnackbarOpen(true);  
+            } else {
+                await db.profile.add(data);
+                setSnackbarMessage(`Profile added: ${data.id}`);
+                setSnackbarOpen(true);
+            }
+        });
+    };
+
+    const onSubmit = (data: ProfileFormData) => {
+        updateIndexedDb(data);
+    };
 
     useEffect(() => {
         getProfile();
@@ -74,15 +72,13 @@ export const Profile = () => {
 
     useEffect(() => {
         if (profileData) {
-            // clear the form
-            reset();
             // update form
             setValue("position", profileData?.position);
             setValue("email", profileData?.email);
             setValue("address", profileData?.address);
 
             // update indexedDb
-            indexedDBupdate(profileData);
+            updateIndexedDb(profileData);
         }
     }, [profileData]);
 
