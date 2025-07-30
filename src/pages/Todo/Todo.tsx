@@ -84,14 +84,9 @@ export const Todo = () => {
         });
     };
 
-    const handleInsertIndexDb = async () => {
-        
-        
-    };
-
     useEffect(() => {
         getTodoList();
-    });
+    }, []);
 
     if (!user) {
         return <Forbidden />;
