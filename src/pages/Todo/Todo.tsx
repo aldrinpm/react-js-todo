@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Input, Typography, Tooltip, Snackbar } from "@mui/material";
+import { Box, Button, Input, Typography, Snackbar } from "@mui/material";
 import TodoList from "./TodoList";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
@@ -76,12 +76,22 @@ export const Todo = () => {
         // Update the task in Firestore
         await updateDoc(doc(todosCollection, id), {
             completed: e.target.checked
+        }).then(() => {
+            setSnackbarMessage(`Task updated: ${id}`);
+            setSnackbarOpen(true);
+        }).catch((error) => {
+            console.error("Error updating task:", error);
         });
+    };
+
+    const handleInsertIndexDb = async () => {
+        
+        
     };
 
     useEffect(() => {
         getTodoList();
-    }, []);
+    });
 
     if (!user) {
         return <Forbidden />;
