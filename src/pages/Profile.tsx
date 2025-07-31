@@ -110,7 +110,7 @@ export const Profile = () => {
 
     return (
         <Box>
-            <h1>Profilessss</h1>
+            <h1>Profile</h1>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
